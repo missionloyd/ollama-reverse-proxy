@@ -1,0 +1,19 @@
+services:
+  ollama-proxy:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    env_file:
+      - .env.local
+    networks:
+      - ollama-network
+    ports:
+      - 11433:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  ollama-network:
+    external: true

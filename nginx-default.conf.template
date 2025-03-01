@@ -1,0 +1,60 @@
+map_hash_bucket_size 128;
+
+map $http_authorization $bearer_match {
+  default 0;
+  "Bearer ${OLLAMA_SECRET_API_KEY}" 1;
+}
+
+map $request_method$bearer_match $auth_required {
+  default 1;   # Require authentication by default
+  ~^OPTIONS0 0; # Allow OPTIONS requests without authentication
+  ~^.*1 0;     # Allow any method if bearer_match is 1
+}
+
+upstream ollama_backend {
+  server ollama1:11434;
+  server ollama2:11434;
+  server ollama3:11434;
+  server ollama4:11434;
+  server ollama5:11434;
+}
+
+server {
+  listen 80;
+  server_name localhost;
+
+  if ($auth_required) {
+    return 401;
+  }
+
+  location /ollama/ {
+    if ($request_method = OPTIONS) {
+      add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+      add_header 'Access-Control-Allow-Credentials' 'true' always;
+      add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+      add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+      add_header 'Access-Control-Max-Age' 1728000;
+      return 204;
+    }
+
+    add_header 'Access-Control-Allow-Origin' "$http_origin" always;
+    add_header 'Access-Control-Allow-Credentials' 'true' always;
+    add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+
+    proxy_pass http://ollama_backend/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_connect_timeout 600;
+    proxy_send_timeout 600;
+    proxy_read_timeout 600;
+    send_timeout 600;
+
+    proxy_hide_header Access-Control-Allow-Origin;
+    proxy_hide_header Access-Control-Allow-Methods;
+    proxy_hide_header Access-Control-Allow-Headers;
+    proxy_hide_header Access-Control-Expose-Headers;
+  }
+}
