@@ -100,11 +100,11 @@ The project uses a `.env.local` file to manage sensitive environment variables.
 
     docker network create ollama-network
 
-    docker run -d --gpus '"device=0"' -v ollama:/root/.ollama -p 11435:11434 --restart always --name ollama1 --network ollama-network ollama/ollama
-    docker run -d --gpus '"device=1"' -v ollama:/root/.ollama -p 11436:11434 --restart always --name ollama2 --network ollama-network ollama/ollama
-    docker run -d --gpus '"device=2"' -v ollama:/root/.ollama -p 11437:11434 --restart always --name ollama3 --network ollama-network ollama/ollama
-    docker run -d --gpus '"device=3"' -v ollama:/root/.ollama -p 11438:11434 --restart always --name ollama4 --network ollama-network ollama/ollama
-    docker run -d --gpus '"device=4"' -v ollama:/root/.ollama -p 11439:11434 --restart always --name ollama5 --network ollama-network ollama/ollama
+    docker run -d --runtime=nvidia --gpus '"device=0"' -v ollama:/root/.ollama -p 11435:11434 --restart always --name ollama1 --network ollama-network ollama/ollama
+    docker run -d --runtime=nvidia --gpus '"device=1"' -v ollama:/root/.ollama -p 11436:11434 --restart always --name ollama2 --network ollama-network ollama/ollama
+    docker run -d --runtime=nvidia --gpus '"device=2"' -v ollama:/root/.ollama -p 11437:11434 --restart always --name ollama3 --network ollama-network ollama/ollama
+    docker run -d --runtime=nvidia --gpus '"device=3"' -v ollama:/root/.ollama -p 11438:11434 --restart always --name ollama4 --network ollama-network ollama/ollama
+    docker run -d --runtime=nvidia --gpus '"device=4"' -v ollama:/root/.ollama -p 11439:11434 --restart always --name ollama5 --network ollama-network ollama/ollama
     ```
    This set of commands will create ollama servers within the same network for each gpu.
 
