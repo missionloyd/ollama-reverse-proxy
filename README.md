@@ -84,38 +84,51 @@ The project uses a `.env.local` file to manage sensitive environment variables.
   ```
 
 ## Usage
-0a. **Install local model of your choice, e.g., **
-    ```
-    docker volume create ollama
-    docker run -d --name ollama-init -v ollama:/root/.ollama ollama/ollama
-    docker exec -it ollama-init ollama pull llama3.2
-    docker stop ollama-init
-    docker rm ollama-init
-    ```
-    
-0b. **Create ollama-network for relevant device(s), e.g., 4 devices**
-    ```bash
-    docker stop ollama
-    docker rm ollama
 
-    docker network create ollama-network
+### Step 0a: Install local model of your choice
 
-    docker run -d --runtime=nvidia --gpus '"device=0"' -v ollama:/root/.ollama -p 11435:11434 --restart always --name ollama1 --network ollama-network ollama/ollama
-    docker run -d --runtime=nvidia --gpus '"device=1"' -v ollama:/root/.ollama -p 11436:11434 --restart always --name ollama2 --network ollama-network ollama/ollama
-    docker run -d --runtime=nvidia --gpus '"device=2"' -v ollama:/root/.ollama -p 11437:11434 --restart always --name ollama3 --network ollama-network ollama/ollama
-    docker run -d --runtime=nvidia --gpus '"device=3"' -v ollama:/root/.ollama -p 11438:11434 --restart always --name ollama4 --network ollama-network ollama/ollama
-    docker run -d --runtime=nvidia --gpus '"device=4"' -v ollama:/root/.ollama -p 11439:11434 --restart always --name ollama5 --network ollama-network ollama/ollama
-    ```
-   This set of commands will create ollama servers within the same network for each gpu.
+```bash
+docker volume create ollama
+docker run -d --name ollama-init -v ollama:/root/.ollama ollama/ollama
+docker exec -it ollama-init ollama pull llama3.2
+docker stop ollama-init
+docker rm ollama-init
+```
 
-0c. **(Optional) check all models running within each container**
-    ```bash
-    docker exec -it ollama1 ollama run llama3.2
-    docker exec -it ollama2 ollama run llama3.2
-    docker exec -it ollama3 ollama run llama3.2
-    docker exec -it ollama4 ollama run llama3.2
-    docker exec -it ollama5 ollama run llama3.2
-    ```
+### Step 0b: Create ollama-network for relevant device(s)
+
+For example, to set up 5 devices:
+
+```bash
+docker stop ollama
+docker rm ollama
+
+docker network create ollama-network
+
+docker run -d --runtime=nvidia --gpus '"device=0"' -v ollama:/root/.ollama -p 11435:11434 --restart always --name ollama1 --network ollama-network ollama/ollama
+docker run -d --runtime=nvidia --gpus '"device=1"' -v ollama:/root/.ollama -p 11436:11434 --restart always --name ollama2 --network ollama-network ollama/ollama
+docker run -d --runtime=nvidia --gpus '"device=2"' -v ollama:/root/.ollama -p 11437:11434 --restart always --name ollama3 --network ollama-network ollama/ollama
+docker run -d --runtime=nvidia --gpus '"device=3"' -v ollama:/root/.ollama -p 11438:11434 --restart always --name ollama4 --network ollama-network ollama/ollama
+docker run -d --runtime=nvidia --gpus '"device=4"' -v ollama:/root/.ollama -p 11439:11434 --restart always --name ollama5 --network ollama-network ollama/ollama
+```
+
+This set of commands will create ollama servers within the same network for each GPU.
+
+### Step 0c: (Optional) Check all models running within each container
+
+```bash
+docker exec -it ollama1 ollama run llama3.2
+docker exec -it ollama2 ollama run llama3.2
+docker exec -it ollama3 ollama run llama3.2
+docker exec -it ollama4 ollama run llama3.2
+docker exec -it ollama5 ollama run llama3.2
+```
+
+### Step 0d: (Optional) Connect other apps to the same network
+
+```bash
+docker network connect ollama-network ragflow-server
+```
 
 1. **Build and Run the Docker Container Using Docker Compose**
 
